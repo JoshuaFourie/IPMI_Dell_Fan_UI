@@ -1,2 +1,4 @@
 /IPMI
 /build
+/OLD
+/__pycache__
