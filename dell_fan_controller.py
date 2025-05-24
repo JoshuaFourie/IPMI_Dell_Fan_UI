@@ -18,7 +18,7 @@ class DellFanControllerUI:
         # Animation variables
         self.fan_angle = 0
         self.temp_animation = 0
-        self.connection_status = "disconnected"  # disconnected, connecting, connected, error
+        self.connection_status = "disconnected"
         
         # Data variables
         self.current_temp = 0
@@ -27,10 +27,8 @@ class DellFanControllerUI:
         self.auto_mode = False
         self.monitoring = False
         
-        # Create the UI
+        # Create UI
         self.setup_ui()
-        
-        # Start animation loop
         self.animate()
         
     def log_message(self, message):
@@ -46,22 +44,22 @@ class DellFanControllerUI:
         self.main_frame = tk.Frame(self.parent_frame, bg='#1a1a1a')
         self.main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         
-        # Header with server info and status
+        # Header with server info and management controls
         self.setup_header()
         
         # Main content area with visual elements
         self.setup_main_content()
         
-        # Control panel
+        # Control panel with better spacing
         self.setup_control_panel()
         
     def setup_header(self):
-        """Create animated header with server status"""
+        """Create header with server info and management controls"""
         header_frame = tk.Frame(self.main_frame, bg='#2d2d2d', height=80)
         header_frame.pack(fill=tk.X, pady=(0, 10))
         header_frame.pack_propagate(False)
         
-        # Server name and model
+        # Server info on the left
         info_frame = tk.Frame(header_frame, bg='#2d2d2d')
         info_frame.pack(side=tk.LEFT, fill=tk.Y, padx=20, pady=10)
         
@@ -77,11 +75,11 @@ class DellFanControllerUI:
                            font=('Arial', 9), fg='#666666', bg='#2d2d2d')
         ip_label.pack(anchor=tk.W)
         
-        # Server management controls
+        # Management controls on the right
         mgmt_frame = tk.Frame(header_frame, bg='#2d2d2d')
         mgmt_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=20, pady=10)
         
-        # Edit/Remove server buttons
+        # Edit/Remove/Curve buttons
         edit_btn = self.create_modern_button(mgmt_frame, "⚙️", self.edit_server, 
                                            color='#ffaa00', width=35)
         edit_btn.pack(side=tk.RIGHT, padx=(5, 0))
@@ -90,7 +88,6 @@ class DellFanControllerUI:
                                              color='#ff4444', width=35)
         remove_btn.pack(side=tk.RIGHT, padx=(5, 0))
         
-        # Fan curve button
         curve_btn = self.create_modern_button(mgmt_frame, "📈 CURVE", self.show_fan_curve, 
                                             color='#aa88ff', width=80)
         curve_btn.pack(side=tk.RIGHT, padx=(5, 0))
@@ -164,22 +161,25 @@ class DellFanControllerUI:
         self.fan_mode_label.pack(pady=(5, 0))
         
     def setup_control_panel(self):
-        """Create sleek control panel"""
-        control_frame = tk.Frame(self.main_frame, bg='#2d2d2d', height=120)
+        """Create control panel with improved spacing and layout"""
+        control_frame = tk.Frame(self.main_frame, bg='#2d2d2d', height=200)
         control_frame.pack(fill=tk.X)
         control_frame.pack_propagate(False)
         
-        # Left controls
-        left_controls = tk.Frame(control_frame, bg='#2d2d2d')
-        left_controls.pack(side=tk.LEFT, fill=tk.Y, padx=20, pady=15)
+        # Top row - Connection and Fan Mode controls
+        top_row = tk.Frame(control_frame, bg='#2d2d2d')
+        top_row.pack(fill=tk.X, padx=20, pady=(15, 10))
         
-        # Connection controls
+        # Left - Connection controls
+        left_controls = tk.Frame(top_row, bg='#2d2d2d')
+        left_controls.pack(side=tk.LEFT, fill=tk.Y)
+        
         conn_label = tk.Label(left_controls, text="CONNECTION", 
                              font=('Arial', 9, 'bold'), fg='#888888', bg='#2d2d2d')
         conn_label.pack(anchor=tk.W)
         
         conn_btn_frame = tk.Frame(left_controls, bg='#2d2d2d')
-        conn_btn_frame.pack(anchor=tk.W, pady=(5, 10))
+        conn_btn_frame.pack(anchor=tk.W, pady=(5, 0))
         
         self.test_btn = self.create_modern_button(conn_btn_frame, "TEST", self.test_connection, 
                                                  color='#00ff88', width=60)
@@ -189,13 +189,16 @@ class DellFanControllerUI:
                                                  color='#ffaa00', width=60)
         self.temp_btn.pack(side=tk.LEFT)
         
-        # Fan mode controls
-        mode_label = tk.Label(left_controls, text="FAN MODE", 
+        # Center - Fan mode controls
+        center_controls = tk.Frame(top_row, bg='#2d2d2d')
+        center_controls.pack(side=tk.LEFT, fill=tk.Y, padx=(50, 0))
+        
+        mode_label = tk.Label(center_controls, text="FAN MODE", 
                              font=('Arial', 9, 'bold'), fg='#888888', bg='#2d2d2d')
         mode_label.pack(anchor=tk.W)
         
-        mode_btn_frame = tk.Frame(left_controls, bg='#2d2d2d')
-        mode_btn_frame.pack(anchor=tk.W, pady=5)
+        mode_btn_frame = tk.Frame(center_controls, bg='#2d2d2d')
+        mode_btn_frame.pack(anchor=tk.W, pady=(5, 0))
         
         self.auto_btn = self.create_modern_button(mode_btn_frame, "AUTO", self.enable_dynamic_control, 
                                                  color='#00aaff', width=60)
@@ -205,63 +208,73 @@ class DellFanControllerUI:
                                                    color='#ff6644', width=60)
         self.manual_btn.pack(side=tk.LEFT)
         
-        # Right controls - Fan speed slider
-        right_controls = tk.Frame(control_frame, bg='#2d2d2d')
-        right_controls.pack(side=tk.RIGHT, fill=tk.Y, padx=20, pady=15)
+        # Right - Auto monitoring controls
+        right_controls = tk.Frame(top_row, bg='#2d2d2d')
+        right_controls.pack(side=tk.RIGHT, fill=tk.Y)
         
-        speed_label = tk.Label(right_controls, text="MANUAL FAN SPEED", 
+        auto_label = tk.Label(right_controls, text="AUTO MONITOR", 
+                             font=('Arial', 9, 'bold'), fg='#888888', bg='#2d2d2d')
+        auto_label.pack(anchor=tk.W)
+        
+        # Temperature threshold with better spacing
+        threshold_frame = tk.Frame(right_controls, bg='#2d2d2d')
+        threshold_frame.pack(anchor=tk.W, pady=(5, 8))
+        
+        tk.Label(threshold_frame, text="Threshold:", font=('Arial', 8), 
+                fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT)
+        
+        self.temp_threshold_var = tk.StringVar(value="45")
+        threshold_entry = tk.Entry(threshold_frame, textvariable=self.temp_threshold_var, 
+                                  width=8, font=('Arial', 8),
+                                  bg='#444444', fg='#ffffff', relief=tk.FLAT, bd=2)
+        threshold_entry.pack(side=tk.LEFT, padx=(5, 3))
+        
+        tk.Label(threshold_frame, text="°C", font=('Arial', 8), 
+                fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT)
+        
+        # Auto monitoring button
+        self.auto_monitor_btn = self.create_modern_button(right_controls, "START AUTO", self.toggle_auto_monitoring, 
+                                                         color='#88ff88', width=95)
+        self.auto_monitor_btn.pack(anchor=tk.W)
+        
+        # Bottom row - Manual fan speed control
+        bottom_row = tk.Frame(control_frame, bg='#2d2d2d')
+        bottom_row.pack(fill=tk.X, padx=20, pady=(0, 15))
+        
+        # Manual fan speed section
+        speed_controls = tk.Frame(bottom_row, bg='#2d2d2d')
+        speed_controls.pack(side=tk.LEFT, fill=tk.Y)
+        
+        speed_label = tk.Label(speed_controls, text="MANUAL FAN SPEED", 
                               font=('Arial', 9, 'bold'), fg='#888888', bg='#2d2d2d')
         speed_label.pack(anchor=tk.W)
         
-        # Custom slider
-        slider_frame = tk.Frame(right_controls, bg='#2d2d2d')
-        slider_frame.pack(anchor=tk.W, pady=5)
+        # Custom slider with dark theme
+        slider_frame = tk.Frame(speed_controls, bg='#2d2d2d')
+        slider_frame.pack(anchor=tk.W, pady=(8, 0))
         
         self.speed_var = tk.StringVar(value="30")
-        self.speed_scale = ttk.Scale(slider_frame, from_=0, to=100, variable=self.speed_var, 
-                                    orient=tk.HORIZONTAL, length=200,
-                                    command=self.update_speed_display)
-        self.speed_scale.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # Dark themed scale
+        self.speed_scale = tk.Scale(slider_frame, from_=0, to=100, variable=self.speed_var, 
+                                   orient=tk.HORIZONTAL, length=250,
+                                   command=self.update_speed_display,
+                                   bg='#2d2d2d', fg='#ffffff', 
+                                   troughcolor='#444444', activebackground='#00aaff',
+                                   highlightthickness=0, relief=tk.FLAT)
+        self.speed_scale.pack(side=tk.LEFT, padx=(0, 15))
         
         self.speed_display = tk.Label(slider_frame, text="30%", 
                                      font=('Arial', 12, 'bold'), fg='#00aaff', bg='#2d2d2d')
         self.speed_display.pack(side=tk.LEFT)
         
-        self.set_speed_btn = self.create_modern_button(right_controls, "SET SPEED", self.set_fan_speed, 
+        # Set speed button
+        self.set_speed_btn = self.create_modern_button(speed_controls, "SET SPEED", self.set_fan_speed, 
                                                       color='#ff6644', width=100)
-        self.set_speed_btn.pack(anchor=tk.W, pady=(10, 0))
-        
-        # Auto monitoring controls
-        auto_controls = tk.Frame(control_frame, bg='#2d2d2d')
-        auto_controls.pack(side=tk.LEFT, fill=tk.Y, padx=20, pady=15)
-        
-        auto_label = tk.Label(auto_controls, text="AUTO MONITOR", 
-                             font=('Arial', 9, 'bold'), fg='#888888', bg='#2d2d2d')
-        auto_label.pack(anchor=tk.W)
-        
-        # Temperature threshold
-        threshold_frame = tk.Frame(auto_controls, bg='#2d2d2d')
-        threshold_frame.pack(anchor=tk.W, pady=(5, 5))
-        
-        tk.Label(threshold_frame, text="Threshold:", font=('Arial', 8), 
-                fg='#666666', bg='#2d2d2d').pack(side=tk.LEFT)
-        
-        self.temp_threshold_var = tk.StringVar(value="45")
-        threshold_entry = tk.Entry(threshold_frame, textvariable=self.temp_threshold_var, 
-                                  width=5, font=('Arial', 8),
-                                  bg='#444444', fg='#ffffff', relief=tk.FLAT)
-        threshold_entry.pack(side=tk.LEFT, padx=(5, 0))
-        
-        tk.Label(threshold_frame, text="°C", font=('Arial', 8), 
-                fg='#666666', bg='#2d2d2d').pack(side=tk.LEFT)
-        
-        # Auto monitoring button
-        self.auto_monitor_btn = self.create_modern_button(auto_controls, "START AUTO", self.toggle_auto_monitoring, 
-                                                         color='#88ff88', width=80)
-        self.auto_monitor_btn.pack(anchor=tk.W, pady=(5, 0))
+        self.set_speed_btn.pack(anchor=tk.W, pady=(12, 0))
         
     def create_modern_button(self, parent, text, command, color='#00aaff', width=80):
-        """Create a modern flat button with hover effects"""
+        """Create modern flat button with hover effects"""
         btn_frame = tk.Frame(parent, bg=color, width=width, height=30)
         btn_frame.pack_propagate(False)
         
@@ -270,7 +283,6 @@ class DellFanControllerUI:
         btn_label.pack(expand=True)
         
         def on_enter(e):
-            # Lighter shade on hover
             hover_color = self.lighten_color(color, 0.2)
             btn_frame.config(bg=hover_color)
             btn_label.config(bg=hover_color)
@@ -379,7 +391,8 @@ class DellFanControllerUI:
         ]
         
         for temp_min, temp_max, color in temp_ranges:
-            start_angle = 135 + (temp_min / 100) * 270
+            # Fix: Start from 225 degrees (bottom left) and sweep clockwise
+            start_angle = 225 - (temp_max / 100) * 270  # Reverse the order
             extent = ((temp_max - temp_min) / 100) * 270
             self.temp_canvas.create_arc(center_x - radius + 10, center_y - radius + 10,
                                       center_x + radius - 10, center_y + radius - 10,
@@ -388,7 +401,8 @@ class DellFanControllerUI:
         
         # Current temperature needle
         if self.current_temp > 0:
-            temp_angle = 135 + (min(self.current_temp, 100) / 100) * 270
+            # Fix: Start from 225 degrees (bottom left) and sweep clockwise
+            temp_angle = 225 - (min(self.current_temp, 100) / 100) * 270
             needle_angle = math.radians(temp_angle)
             needle_x = center_x + 60 * math.cos(needle_angle)
             needle_y = center_y + 60 * math.sin(needle_angle)
@@ -403,7 +417,8 @@ class DellFanControllerUI:
         
         # Temperature markings
         for temp in [0, 25, 50, 75, 100]:
-            angle = 135 + (temp / 100) * 270
+            # Fix: Start from 225 degrees (bottom left) and sweep clockwise  
+            angle = 225 - (temp / 100) * 270
             rad = math.radians(angle)
             x1 = center_x + 70 * math.cos(rad)
             y1 = center_y + 70 * math.sin(rad)
@@ -430,7 +445,7 @@ class DellFanControllerUI:
         
         # Animate fan blades based on speed
         if self.current_fan_speed > 0:
-            rotation_speed = self.current_fan_speed / 100 * 10  # Adjust speed
+            rotation_speed = self.current_fan_speed / 100 * 10
             self.fan_angle += rotation_speed
             
             # Draw fan blades
@@ -516,7 +531,7 @@ class DellFanControllerUI:
             if success:
                 max_temp = 0
                 for line in stdout.split('\n'):
-                    if '0Eh' in line or 'CPU' in line:  # CPU temperature
+                    if '0Eh' in line or 'CPU' in line:
                         temp_match = re.search(r'\|\s*(\d+)\s*degrees', line)
                         if temp_match:
                             temp = int(temp_match.group(1))
@@ -598,14 +613,22 @@ class DellFanControllerUI:
         """Start or stop automatic monitoring"""
         if not self.monitoring:
             self.monitoring = True
-            self.auto_monitor_btn = self.create_modern_button(self.auto_monitor_btn.master, "STOP AUTO", self.toggle_auto_monitoring, 
-                                                             color='#ff4444', width=80)
+            self.auto_monitor_btn.destroy()
+            self.auto_monitor_btn = self.create_modern_button(
+                self.auto_monitor_btn.master, "STOP AUTO", self.toggle_auto_monitoring, 
+                color='#ff4444', width=95
+            )
+            self.auto_monitor_btn.pack(anchor=tk.W)
             self.log_message("Starting automatic monitoring...")
             threading.Thread(target=self.auto_monitoring_loop, daemon=True).start()
         else:
             self.monitoring = False
-            self.auto_monitor_btn = self.create_modern_button(self.auto_monitor_btn.master, "START AUTO", self.toggle_auto_monitoring, 
-                                                             color='#88ff88', width=80)
+            self.auto_monitor_btn.destroy()
+            self.auto_monitor_btn = self.create_modern_button(
+                self.auto_monitor_btn.master, "START AUTO", self.toggle_auto_monitoring, 
+                color='#88ff88', width=95
+            )
+            self.auto_monitor_btn.pack(anchor=tk.W)
             self.log_message("Stopping automatic monitoring...")
             
     def auto_monitoring_loop(self):
@@ -624,7 +647,7 @@ class DellFanControllerUI:
                 # Parse temperature
                 current_temp = None
                 for line in stdout.split('\n'):
-                    if '0Eh' in line or 'CPU' in line:  # CPU temperature
+                    if '0Eh' in line or 'CPU' in line:
                         temp_match = re.search(r'\|\s*(\d+)\s*degrees', line)
                         if temp_match:
                             current_temp = int(temp_match.group(1))
@@ -643,7 +666,7 @@ class DellFanControllerUI:
                 if current_temp > threshold:
                     self.log_message(f"Temperature above {threshold}°C - enabling dynamic control")
                     self.run_ipmitool_command(["raw", "0x30", "0x30", "0x01", "0x01"])
-                    time.sleep(60)  # Wait longer when in dynamic mode
+                    time.sleep(60)
                     continue
                     
                 # Temperature below threshold - set manual control
@@ -669,7 +692,7 @@ class DellFanControllerUI:
                 self.current_fan_speed = fan_speed
                 self.fan_speed_label.config(text=f"Speed: {fan_speed}%")
                 
-                time.sleep(30)  # Check every 30 seconds
+                time.sleep(30)
                 
             except Exception as e:
                 self.log_message(f"✗ Error in auto monitoring: {e}")
@@ -761,7 +784,7 @@ class FanCurveEditor:
         # Create the editor window
         self.window = tk.Toplevel(parent)
         self.window.title(f"Fan Curve Editor - {server_config['name']}")
-        self.window.geometry("600x500")
+        self.window.geometry("650x550")
         self.window.configure(bg='#1a1a1a')
         self.window.transient(parent)
         self.window.grab_set()
@@ -804,7 +827,7 @@ class FanCurveEditor:
         graph_title.pack(pady=10)
         
         # Canvas for curve visualization
-        self.curve_canvas = tk.Canvas(graph_frame, width=500, height=300, 
+        self.curve_canvas = tk.Canvas(graph_frame, width=550, height=300, 
                                      bg='#333333', highlightthickness=0)
         self.curve_canvas.pack(pady=10)
         
@@ -826,9 +849,9 @@ class FanCurveEditor:
         headers_frame.pack(fill=tk.X, pady=(0, 5))
         
         tk.Label(headers_frame, text="Temperature (°C)", font=('Arial', 10, 'bold'), 
-                fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT, padx=(0, 80))
+                fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT, padx=(0, 100))
         tk.Label(headers_frame, text="Fan Speed (%)", font=('Arial', 10, 'bold'), 
-                fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT, padx=(0, 80))
+                fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT, padx=(0, 100))
         tk.Label(headers_frame, text="Actions", font=('Arial', 10, 'bold'), 
                 fg='#888888', bg='#2d2d2d').pack(side=tk.LEFT)
         
@@ -890,15 +913,15 @@ class FanCurveEditor:
             
             # Temperature entry
             temp_var = tk.StringVar(value=str(temp))
-            temp_entry = tk.Entry(point_frame, textvariable=temp_var, width=10,
+            temp_entry = tk.Entry(point_frame, textvariable=temp_var, width=12,
                                  bg='#444444', fg='#ffffff', relief=tk.FLAT, bd=5)
-            temp_entry.pack(side=tk.LEFT, padx=(10, 20))
+            temp_entry.pack(side=tk.LEFT, padx=(10, 25))
             
             # Speed entry
             speed_var = tk.StringVar(value=str(speed))
-            speed_entry = tk.Entry(point_frame, textvariable=speed_var, width=10,
+            speed_entry = tk.Entry(point_frame, textvariable=speed_var, width=12,
                                   bg='#444444', fg='#ffffff', relief=tk.FLAT, bd=5)
-            speed_entry.pack(side=tk.LEFT, padx=(0, 20))
+            speed_entry.pack(side=tk.LEFT, padx=(0, 25))
             
             # Update button
             update_btn = tk.Button(point_frame, text="Update",
@@ -909,12 +932,13 @@ class FanCurveEditor:
             update_btn.pack(side=tk.LEFT, padx=(0, 5))
             
             # Remove button
-            remove_btn = tk.Button(point_frame, text="Remove",
-                                  font=('Arial', 8, 'bold'),
-                                  bg='#ff4444', fg='#ffffff',
-                                  relief=tk.FLAT, bd=0, padx=10, pady=2,
-                                  command=lambda idx=i: self.remove_point(idx))
-            remove_btn.pack(side=tk.LEFT)
+            if len(self.curve_points) > 2:  # Keep at least 2 points
+                remove_btn = tk.Button(point_frame, text="Remove",
+                                      font=('Arial', 8, 'bold'),
+                                      bg='#ff4444', fg='#ffffff',
+                                      relief=tk.FLAT, bd=0, padx=10, pady=2,
+                                      command=lambda idx=i: self.remove_point(idx))
+                remove_btn.pack(side=tk.LEFT)
             
         self.draw_curve()
         
@@ -924,7 +948,7 @@ class FanCurveEditor:
         
         # Graph dimensions
         margin = 50
-        graph_width = 400
+        graph_width = 450
         graph_height = 200
         
         # Draw axes
@@ -1028,7 +1052,7 @@ class FanCurveEditor:
         
         preset_window = tk.Toplevel(self.window)
         preset_window.title("Fan Curve Presets")
-        preset_window.geometry("400x300")
+        preset_window.geometry("400x350")
         preset_window.configure(bg='#1a1a1a')
         preset_window.transient(self.window)
         preset_window.grab_set()
@@ -1044,7 +1068,7 @@ class FanCurveEditor:
                            bg='#58a6ff', fg='#ffffff',
                            relief=tk.FLAT, bd=0, padx=30, pady=10,
                            command=lambda p=points, w=preset_window: self.load_preset(p, w))
-            btn.pack(pady=5)
+            btn.pack(pady=8)
             
     def load_preset(self, points, window):
         """Load a preset curve"""
@@ -1053,19 +1077,21 @@ class FanCurveEditor:
         window.destroy()
         
     def apply_curve(self):
-        """Apply the fan curve (for future implementation)"""
+        """Apply the fan curve"""
         if len(self.curve_points) < 2:
             messagebox.showerror("Error", "Need at least 2 points to create a curve")
             return
             
-        # For now, just log the curve points
+        # Log curve points for now
         self.log_callback("📈 Fan curve configuration:")
         for temp, speed in sorted(self.curve_points):
             self.log_callback(f"   {temp}°C -> {speed}%")
             
         # Future: Implement actual curve application via iDRAC
-        messagebox.showinfo("Info", 
-                          "Fan curve logged. Actual curve implementation requires "
-                          "advanced iDRAC scripting and will be added in future updates.")
+        messagebox.showinfo("Fan Curve Applied", 
+                          "Fan curve logged successfully!\n\n"
+                          "Note: Actual curve implementation requires advanced iDRAC scripting "
+                          "and will be added in future updates.\n\n"
+                          "For now, you can use the manual controls and auto monitoring features.")
         
         self.window.destroy()
